@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  name         String
+  email        String        @unique
+  password     String
+  role         Role          @default(doctor)
+  department   String?
+  status       UserStatus    @default(active)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  reservations Reservation[]
+
+  @@map("users")
+}
+
+model Building {
+  id          Int      @id @default(autoincrement())
+  name        String
+  code        String   @unique
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  rooms       Room[]
+
+  @@map("buildings")
+}
+
+model Room {
+  id           Int           @id @default(autoincrement())
+  roomName     String        @map("room_name")
+  buildingId   Int           @map("building_id")
+  capacity     Int
+  roomType     RoomType      @default(lecture_hall) @map("room_type")
+  status       RoomStatus    @default(available)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  building     Building      @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  reservations Reservation[]
+
+  @@map("rooms")
+}
+
+model Reservation {
+  id             Int               @id @default(autoincrement())
+  userId         Int               @map("user_id")
+  roomId         Int               @map("room_id")
+  date           DateTime          @db.Date
+  startTime      String            @map("start_time")
+  endTime        String            @map("end_time")
+  studentsNumber Int?              @map("students_number")
+  purpose        String?           @db.Text
+  status         ReservationStatus @default(pending)
+  adminNotes     String?           @map("admin_notes") @db.Text
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  room           Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@map("reservations")
+}
+
+enum Role {
+  admin
+  doctor
+}
+
+enum UserStatus {
+  active
+  inactive
+}
+
+enum RoomType {
+  lecture_hall
+  lab
+  meeting_room
+  auditorium
+}
+
+enum RoomStatus {
+  available
+  maintenance
+  occupied
+}
+
+enum ReservationStatus {
+  pending
+  approved
+  rejected
+  cancelled
+}

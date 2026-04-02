@@ -1,0 +1,27 @@
+{
+  "name": "yarmouk-reservation-frontend-low",
+  "version": "1.0.0",
+  "description": "Frontend for Yarmouk University Room Reservation System - Low Resource Version",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev-low": "vite --port 3000 --host --minify false",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.3.4"
+  },
+  "keywords": ["yarmouk", "reservation", "react", "vite"],
+  "author": "Yarmouk University",
+  "license": "MIT"
+}
