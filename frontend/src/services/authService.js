@@ -1,6 +1,6 @@
 import api from './api'
 
-/* ── Demo accounts (work without backend) ── */
+/* ── Demo accounts (bypass backend entirely) ── */
 const DEMO_USERS = {
   'admin@yu.edu.jo': {
     token: 'demo-admin-token',
@@ -12,19 +12,20 @@ const DEMO_USERS = {
   },
 }
 
+const DEMO_PASSWORDS = {
+  'admin@yu.edu.jo': 'admin123',
+  'doctor@yu.edu.jo': 'doctor123',
+}
+
 export const authService = {
   login: async (email, password) => {
-    try {
-      // Try real backend first
-      const res = await api.post('/auth/login', { email, password })
-      return res.data
-    } catch (err) {
-      // Fallback to demo accounts if backend is unreachable
-      if (DEMO_USERS[email] && (!err.response || err.code === 'ERR_NETWORK')) {
-        return DEMO_USERS[email]
-      }
-      throw err
+    // For demo accounts, bypass backend entirely
+    if (DEMO_USERS[email] && DEMO_PASSWORDS[email] === password) {
+      return DEMO_USERS[email]
     }
+
+    const res = await api.post('/auth/login', { email, password })
+    return res.data
   },
 
   register: async (payload) => {
