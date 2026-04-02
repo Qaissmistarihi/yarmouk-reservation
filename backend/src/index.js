@@ -15,7 +15,20 @@ const app = express()
 const PORT = process.env.PORT || 5000
 
 // Middleware
-app.use(cors())
+const allowedOrigins = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(',').map(s => s.trim())
+  : []
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, same-origin) or from allowed origins
+    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      callback(null, true)
+    } else {
+      callback(new Error(`Origin ${origin} not allowed by CORS`))
+    }
+  },
+  credentials: true,
+}))
 app.use(express.json())
 app.use(morgan('dev'))
 
